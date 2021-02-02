@@ -7,6 +7,18 @@ def create_csv(created_collection, file_to_write):
         for data in created_collection:
             writer.writerow(created_collection[data])
 
+
+def create_noc_regions():
+    with open("archive/noc_regions.csv") as csvfile:
+        with open('archive/noc_region_wo_notes.csv', 'w', newline="") as writefile:
+            reader = csv.reader(csvfile, delimiter = ",")
+            line_writer = csv.writer(writefile, delimiter = ',')
+            next(reader)
+            for line in reader:
+                line_writer.writerow([line[0],line[1]])
+
+
+
 def main():
     athletes_dict = {}
     sports_dict = {}
@@ -17,28 +29,19 @@ def main():
     athletes_teams_dict = {}
     sports_events_dict = {}
     athletes_events_medals_dict = {}
-    with open("archive/nocs-regions.csv") as csvfile:
-        reader = csv.reader(csvfile, delimiter = ",")
-        team_id = 0
-        for row in reader:
-            # teams table
-            if row[0] not in teams_dict:
-                team_id += 1
-                teams_dict[row[0]] = [team_id, row[0], row[1]]
-
     with open("archive/athlete_events.csv") as csvfile:
         reader = csv.reader(csvfile, delimiter = ",")
         athlete_id = 0
-        sport_id = 0 
+        sport_id = 0
         game_id = 0
         event_id = 0
         medal_id = 0
+        team_id = 0
         row_id = 0
         athlete_team_id = 0
         sport_event_id = 0
         next(reader)
         for row in reader:
-            current_team_id = teams_dict[row[6]]
             # athletes table
             if row[1] not in athletes_dict:
                 athlete_id += 1
@@ -52,6 +55,14 @@ def main():
                 else:
                     weight = row[5]
                 athletes_dict[row[1]] = [athlete_id, row[1], row[2], height, weight]
+
+            # teams table
+            if (row[6], row[7]) not in teams_dict:
+                team_id += 1
+                teams_dict[(row[6], row[7])] = [team_id, row[6], row[7]]
+                current_team_id = team_id
+            else:
+                current_team_id = teams_dict[(row[6], row[7])][0]
 
             # sports table
             if row[12] not in sports_dict:
@@ -75,16 +86,16 @@ def main():
                 events_dict[row[13]] = [event_id, row[13]]
                 current_event_id = event_id
             else:
-                current_event_id = events_dict[row[13]][0]    
-            
+                current_event_id = events_dict[row[13]][0]
+
             # medals table
             if row[14] not in medals_dict:
                 medal_id += 1
                 medals_dict[row[14]] = [medal_id, row[14]]
                 current_medal_id = medal_id
             else:
-                current_medal_id = medals_dict[row[14]][0]   
-            
+                current_medal_id = medals_dict[row[14]][0]
+
             # athletes_teams table
             if (athlete_id, current_team_id) not in athletes_teams_dict:
                 athlete_team_id += 1
@@ -107,24 +118,24 @@ def main():
             row_id += 1
             athletes_events_medals_dict[row_id] = \
             [row_id, current_athlete_team_id, current_game_id, current_sport_event_id, current_medal_id]
-    
+
+    create_noc_regions()
     create_csv(athletes_dict, "athletes.csv")
-    
+
     create_csv(teams_dict, "teams.csv")
-    
+
     create_csv(sports_dict, "sports.csv")
-    
+
     create_csv(games_dict, "games.csv")
-    
+
     create_csv(events_dict, "events.csv")
-    
+
     create_csv(medals_dict, "medals.csv")
 
     create_csv(athletes_teams_dict, "athletes_teams.csv")
-    
+
     create_csv(sports_events_dict, "sports_events.csv")
 
     create_csv(athletes_events_medals_dict, "athletes_events_medals.csv")
 if __name__ == "__main__":
     main()
-            

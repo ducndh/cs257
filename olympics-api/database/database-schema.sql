@@ -53,3 +53,8 @@ CREATE TABLE athletes_events_medals (
   sport_event_id int,
   medal_id int
 );
+
+CREATE TABLE noc_regions (
+  noc text,
+  region text
+);

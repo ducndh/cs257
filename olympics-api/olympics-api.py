@@ -42,99 +42,109 @@ def get_games_query():
     '''
     query = "\
         SELECT games.id, games.year, games.season, games.city \
-        FROM games.csv \
+        FROM games \
         ORDER BY games.year;\
         "
     connection = connection_to_database()
     try:
         cursor = connection.cursor()
         cursor.execute(query)
-        connection.close()
         return cursor
     except Exception as e:
         print(e)
         exit()
 
 @app.route('/games')
-def get_games(cursor):
+def get_games():
     games_list = []
+    cursor= get_games_query()
     for row in cursor:
         game_dict = {}
         game_dict['id'] = row[0]
         game_dict['year'] = row[1]
         game_dict['season'] = row[2]
         game_dict['city'] = row[3]
-    # cursor.close()
-    return json.dump(games_list)
-        
+        games_list.append(game_dict)
+    cursor.close()
+    return json.dumps(games_list)
+
 def get_nocs_query():
     query = "\
-    SELECT teams.NOC, teams.team \
-    FROM teams \
-    ORDER BY teams.team; \
+    SELECT noc_regions.NOC, noc_regions.region \
+    FROM noc_regions;\
     "
     connection = connection_to_database()
     try:
         cursor = connection.cursor()
         cursor.execute(query)
-        connection.close()
         return cursor
     except Exception as e:
         print(e)
         exit()
 
 @app.route('/nocs')
-def get_nocs(cursor):
+def get_nocs():
     nocs_list = []
+    cursor=get_nocs_query()
     for row in cursor:
         noc_dict = {}
-        noc_dict['NOC'] = row[0]
-        noc_dict['team'] = row[1]
-    # cursor.close()
-    return json.dump(nocs_list)
+        noc_dict['abbreviation'] = row[0]
+        noc_dict['name'] = row[1]
+        nocs_list.append(noc_dict)
+    cursor.close()
+    return json.dumps(nocs_list)
 
 
-def get_medalists_query():
+def get_medalists_query(games_id):
     noc = flask.request.args.get('noc')
     query = "\
-    SELECT athletes.id, athletes.name, athletes.sex, sports_events.sport, sports_events.event, medals.medal \
-    FROM athletes_events_medals, medals, sports_events, athletes_teams, athletes, teams\
+    SELECT DISTINCT athletes.id, athletes.name, athletes.sex, sports.sport, events.event, medals.medal \
+    FROM athletes_events_medals, medals, sports_events, athletes_teams, athletes, teams,games,sports,events\
     WHERE medals.medal != 'NA'\
     AND medals.id = athletes_events_medals.medal_id \
     AND sports_events.id = athletes_events_medals.sport_event_id\
-    AND athletes_teams.id = athletes_events_medals.athlete_id \
+    AND athletes_teams.id = athletes_events_medals.athlete_team_id \
     AND athletes.id = athletes_teams.athlete_id \
+    AND sports_events.sport_id = sports.id \
+    AND sports_events.event_id = events.id \
+    AND athletes_events_medals.game_id = games.id\
+    AND games.id ="  + games_id + "\
     "
+
 
     if noc is not None:
         query += "\
+        AND teams.id = athletes_teams.team_id\
         AND teams.NOC = '{}'".format(noc)
 
-    query += ';'
-        
+    query += ";"
+
+
+
     connection = connection_to_database()
     try:
         cursor = connection.cursor()
         cursor.execute(query)
-        connection.close()
         return cursor
     except Exception as e:
         print(e)
         exit()
-        
-@app.route('/medalists/games/<games_id>?[noc=noc_abbreviation]')
-def get_medalists(cursor):
+
+@app.route('/medalists/games/<games_id>')
+def get_medalists(games_id):
+    cursor=get_medalists_query(games_id)
     medalists_list = []
     for row in cursor:
         medalist_dict = {}
-        medalist_dict['id'] = row[0]
-        medalist_dict['name'] = row[1]
-        medalist_dict['sex'] = row[2]
+        medalist_dict['athlete_id'] = row[0]
+        medalist_dict['athlete_name'] = row[1]
+        medalist_dict['athlete_sex'] = row[2]
         medalist_dict['sport'] = row[3]
         medalist_dict['event'] = row[4]
         medalist_dict['medal'] = row[5]
-    # cursor.close()
-    return json.dump(medalists_list)
+        medalists_list.append(medalist_dict)
+    cursor.close()
+    return json.dumps(medalists_list)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('An API to retrieve data from the olympics database')

@@ -1,7 +1,7 @@
 # CS257 - Daeyeon Kim, Duc Nguyen
 import csv
 
-def create_csv(created_collection, field_names, file_to_write):
+def create_csv(created_collection, file_to_write):
     with open("archive/" + file_to_write, "w") as csv_file:
         writer = csv.writer(csv_file)
         for data in created_collection:
@@ -17,6 +17,15 @@ def main():
     athletes_teams_dict = {}
     sports_events_dict = {}
     athletes_events_medals_dict = {}
+    with open("archive/nocs-regions.csv") as csvfile:
+        reader = csv.reader(csvfile, delimiter = ",")
+        team_id = 0
+        for row in reader:
+            # teams table
+            if row[0] not in teams_dict:
+                team_id += 1
+                teams_dict[row[0]] = [team_id, row[0], row[1]]
+
     with open("archive/athlete_events.csv") as csvfile:
         reader = csv.reader(csvfile, delimiter = ",")
         athlete_id = 0
@@ -24,12 +33,12 @@ def main():
         game_id = 0
         event_id = 0
         medal_id = 0
-        team_id = 0
         row_id = 0
         athlete_team_id = 0
         sport_event_id = 0
         next(reader)
         for row in reader:
+            current_team_id = teams_dict[row[6]]
             # athletes table
             if row[1] not in athletes_dict:
                 athlete_id += 1
@@ -43,14 +52,6 @@ def main():
                 else:
                     weight = row[5]
                 athletes_dict[row[1]] = [athlete_id, row[1], row[2], height, weight]
-            
-            # teams table
-            if (row[6], row[7]) not in teams_dict:
-                team_id += 1
-                teams_dict[(row[6], row[7])] = [team_id, row[6], row[7]]
-                current_team_id = team_id
-            else:
-                current_team_id = teams_dict[(row[6], row[7])][0]
 
             # sports table
             if row[12] not in sports_dict:

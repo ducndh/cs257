@@ -36,9 +36,10 @@ def get_help():
 
 def get_games_query():
     '''
-    Get a cursor that contain all the games sort by year
+    Gets a cursor that contain all the games and their details sorted by year
+
     Returns:
-        cursor: the cursor object to iterate over
+        a cursor that can be iterated over with the results of the queries
     '''
     query = "\
         SELECT games.id, games.year, games.season, games.city \
@@ -56,6 +57,9 @@ def get_games_query():
 
 @app.route('/games')
 def get_games():
+    '''
+    Returns a JSON response of games and their details sorted by year
+    '''
     games_list = []
     cursor= get_games_query()
     for row in cursor:
@@ -69,6 +73,12 @@ def get_games():
     return json.dumps(games_list)
 
 def get_nocs_query():
+    '''
+    Gets a cursor that contain all nocs and their full names
+
+    Returns:
+        a cursor that can be iterated over with the results of the queries
+    '''
     query = "\
     SELECT noc_regions.NOC, noc_regions.region \
     FROM noc_regions;\
@@ -84,6 +94,9 @@ def get_nocs_query():
 
 @app.route('/nocs')
 def get_nocs():
+    '''
+    Returns a JSON response of nocs and their full names
+    '''
     nocs_list = []
     cursor=get_nocs_query()
     for row in cursor:
@@ -96,6 +109,12 @@ def get_nocs():
 
 
 def get_medalists_query(games_id):
+    '''
+    Gets a cursor that contains all the medalists and their respective details
+
+    Returns:
+        a cursor that can be iterated over with the results of the queries
+    '''
     noc = flask.request.args.get('noc')
     query = "\
     SELECT DISTINCT athletes.id, athletes.name, athletes.sex, sports.sport, events.event, medals.medal \
@@ -132,6 +151,14 @@ def get_medalists_query(games_id):
 
 @app.route('/medalists/games/<games_id>')
 def get_medalists(games_id):
+    '''
+    Returns a JSON response of medalists and their respective details based on the following GET parameters:
+    games_id, int : reject any games who's games_id does not match this integer
+    noc, text : reject any medalist who's noc does not match this noc exactly during the specified games.
+
+    if the noc parameter is absent, then any medalist is treated as though
+    it meets the corresponding constraint.
+    '''
     cursor=get_medalists_query(games_id)
     medalists_list = []
     for row in cursor:

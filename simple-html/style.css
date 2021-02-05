@@ -10,29 +10,32 @@ panels {
     width: 100%;
 }
 
-top {
+#top {
     width: 95%;
     height: 15%;
     float:left;
     font-size: 24pt;
     color: white;
+    border: purple;
     background-color: red;
 }
 
-left_side {
+#left_side {
     width: 15%;
     height: 80%;
     float:left;
     font-size: 24pt;
     color: white;
+    border: purple;
     background-color: green;
 }
 
-lower_right{
+#lower_right{
     width: 80%;
     height: 80%;
     float:left;
     font-size: 24pt;
     color: white;
+    border: purple;
     background-color: blue;
 }

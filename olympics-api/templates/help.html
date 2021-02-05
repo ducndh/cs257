@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Olympics API reference</title>
+</head>
+<body>
+    <pre>Olympics API: endpoint reference
+All responses are in JSON
+
+REQUEST: /help
+RESPONSE:
+    This message
+
+REQUEST: /games
+RESPONSE:
+      a JSON list of dictionaries, each of which represents one
+      Olympic games, sorted by year. Each dictionary in this list will have
+      the following fields.
+
+      id -- (INTEGER) a unique identifier for the games in question
+      year -- (INTEGER) the 4-digit year in which the games were held (e.g. 1992)
+      season -- (TEXT) the season of the games (either "Summer" or "Winter")
+      city -- (TEXT) the host city (e.g. "Barcelona")
+
+REQUEST: /nocs
+      a JSON list of dictionaries, each of which represents one
+      National Olympic Committee, alphabetized by NOC abbreviation. Each dictionary
+      in this list will have the following fields.
+
+      abbreviation -- (TEXT) the NOC's abbreviation (e.g. "USA", "MEX", "CAN", etc.)
+      name -- (TEXT) the NOC's full name.
+
+
+REQUEST: /medalists/games/<games_id>?[noc=noc_abbreviation]
+
+      RESPONSE: a JSON list of dictionaries, each representing one athlete
+      who earned a medal in the specified games. Each dictionary will have the
+      following fields.
+
+      athlete_id -- (INTEGER) a unique identifier for the athlete
+      athlete_name -- (TEXT) the athlete's full name
+      athlete_sex -- (TEXT) the athlete's sex as specified in the database ("F" or "M")
+      sport -- (TEXT) the name of the sport in which the medal was earned
+      event -- (TEXT) the name of the event in which the medal was earned
+      medal -- (TEXT) the type of medal ("gold", "silver", or "bronze")
+
+
+    For example:
+
+        /medalists/games/14?noc=CAN
+
+    will return a list of all Canadian athletes that participated in Olympics games 14 and won a medal.
+
+        /nocs
+
+    will return a list of all NOCS and their corresponding full name.
+
+
+    </pre>
+</body>
+</html>

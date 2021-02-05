@@ -16,17 +16,17 @@ body {
     float:left;
     font-size: 12pt;
     color: white;
-    border: 20px purple;
+    border: 10pt purple;
     background-color: red;
 }
 
 #left_side {
     width: 20%;
-    height: 80%;
+    height: 320%;
     float:left;
     font-size: 12pt;
     color: white;
-    border: 20px purple;
+    border: 10pt purple;
     background-color: green;
 }
 
@@ -36,6 +36,6 @@ body {
     float:left;
     font-size: 12pt;
     color: white;
-    border: 20px purple;
+    border: 10pt purple;
     background-color: blue;
 }

@@ -1,0 +1,38 @@
+/* Duc Nguyen
+February 4th, 2021 */
+
+body {
+    margin: 20px;
+}
+
+panels {
+    height: 100%;
+    width: 100%;
+}
+
+top {
+    width: 95%;
+    height: 15%;
+    float:left;
+    font-size: 24pt;
+    color: white;
+    background-color: red;
+}
+
+left_side {
+    width: 15%;
+    height: 80%;
+    float:left;
+    font-size: 24pt;
+    color: white;
+    background-color: green;
+}
+
+lower_right{
+    width: 80%;
+    height: 80%;
+    float:left;
+    font-size: 24pt;
+    color: white;
+    background-color: blue;
+}
